@@ -1,1 +1,23 @@
-/* You can add global styles to this file, and also import other style files */
+@import "./css/fonts.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::-webkit-scrollbar {
+  width: 5px;
+  right: 5px;
+  position: absolute;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: black;
+  border-radius: 10px;
+}
+
+.canvasjs-chart-credit {
+  display: none !important;
+}

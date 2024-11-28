@@ -1,6 +1,8 @@
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { Component, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import gsap from 'gsap';
+import { ApiService } from '../../../services/ApiService';
+import { finalize } from 'rxjs';
 
 interface ChatMessage {
   content: string;
@@ -42,7 +44,11 @@ interface ChatMessage {
 export class MainPageComponent {
   title = 'chatBot';
 
-  
+  private MessageId:number|null=null
+  constructor(private apiService:ApiService){
+    this.MessageId=Date.now()
+  }
+
   @ViewChild('Robot') private readonly Robot!: ElementRef;
   @ViewChild('scrollable') private readonly scrollable!: ElementRef;
 
@@ -50,7 +56,7 @@ export class MainPageComponent {
   @ViewChild('inputForm') private readonly inputForm! :ElementRef
   @ViewChild('RobotImage') private readonly RobotImage! :ElementRef
   @ViewChild("RobotMessage") private readonly RobotMessage!:ElementRef
-
+  isLoading:boolean=false
   currentMessage: string = '';
   messages: ChatMessage[] = [];
   gsapTL:any=null
@@ -73,13 +79,11 @@ export class MainPageComponent {
 
   scrollToBottom(){
     const div= document.getElementById("messageContainer") as HTMLElement
-    console.log(div)
     div.scrollTop=div.scrollHeight
   }
 
  
   moveToRight() {
-    console.log(this.inputForm.nativeElement  )
 
     gsap.matchMedia().add("(min-width: 769px)", () => {
       // Animations for devices with width >= 769px
@@ -105,6 +109,7 @@ export class MainPageComponent {
   }
 
   sendMessage() {
+    console.log(this.MessageId)
     this.scrollToBottom()
     if (this.currentMessage.trim()) {
       this.robotPosition = 'right';
@@ -123,20 +128,30 @@ export class MainPageComponent {
       if(this.messages.length){
           this.moveToRight()
       }
-      
+
+      if(this.MessageId){
+        this.messages.push({
+              content: 'Thank you for your message. I am processing your request...',
+              isUser: false,
+              timestamp: new Date()
+            });
+
+        this.makeFethRequest(this.currentMessage,this.MessageId,"chat")
+      }
+
 
       // Simulate bot response
-      setTimeout(() => {
-        this.scrollToBottom()
+      // setTimeout(() => {
+      //   this.scrollToBottom()
         
-        this.messages.push({
-          content: 'Thank you for your message. I am processing your request...',
-          isUser: false,
-          timestamp: new Date()
-        });
-        this.scrollToBottom()
+      //   this.messages.push({
+      //     content: 'Thank you for your message. I am processing your request...',
+      //     isUser: false,
+      //     timestamp: new Date()
+      //   });
+      //   this.scrollToBottom()
       
-      }, 1000);
+      // }, 1000);
       this.scrollToBottom()
 
       this.currentMessage = '';
@@ -144,7 +159,39 @@ export class MainPageComponent {
     
     
   }
+  makeFethRequest(message:string,messageId:number,endpoint:string){
+    this.isLoading=true
+    this.apiService.SendMessage(message,messageId,endpoint).pipe(
+      finalize(()=>{
+        this.isLoading=false
+      })
+      
+    ).subscribe({
+      next:(res)=>{
+        let lastmessage=this.messages.pop()
+        if(lastmessage){
+
+          lastmessage.content=res.response
+          this.messages.push(lastmessage)
+        
+        }
+      },
+      error:(err)=>{
+        console.log(err)
+        let lastmessage=this.messages.pop()
+        if(lastmessage){
+
+          lastmessage.content="sorry there was an error with your request please try again"
+          this.messages.push(lastmessage)
+        
+        }
+        
+      }
+    })
+
+  }
   emptyChat(){
+    this.MessageId=Date.now()
     this.messages=[]
     this.ResetPosition()
   }

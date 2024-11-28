@@ -48,22 +48,29 @@
             h-[64vh] 
             w-full
            lg:w-[65%]
+           flex
+           flex-row-reverse
             "
             #scrollable
             >
             <div 
                 #messageContainer
+                id="messageContainer"
                 class="
-                h-full
+                h-fit
+                max-h-full
                 flex-col space-y-4 mb-8
                 w-[100%]
-               
+               overflow-y-scroll 
+            scroll-smooth
+            overflow-x-hidden
+               mt-auto
                 "
             >
 
                 <div 
                 *ngFor="let message of messages" 
-               class=" flex flex-wrap"
+               class=" flex flex-wrap justify-items-end"
                 [ngClass]="message.isUser ? 'justify-end' : 'justify-start'"
               >
                 <div 

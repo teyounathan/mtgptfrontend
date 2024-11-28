@@ -72,8 +72,9 @@ export class MainPageComponent {
   }
 
   scrollToBottom(){
-    const div= this.scrollable.nativeElement
-    div.scrollTop=div.scrollHeight-div.clientHeight
+    const div= document.getElementById("messageContainer") as HTMLElement
+    console.log(div)
+    div.scrollTop=div.scrollHeight
   }
 
  
@@ -104,13 +105,13 @@ export class MainPageComponent {
   }
 
   sendMessage() {
-    console.log(this.robotPosition)
+    this.scrollToBottom()
     if (this.currentMessage.trim()) {
       this.robotPosition = 'right';
-      if(this.messages.length){
+    
   
         this.scrollToBottom()
-      }
+      
       // Add user message
       this.messages.push({
         content: this.currentMessage,
@@ -126,18 +127,21 @@ export class MainPageComponent {
 
       // Simulate bot response
       setTimeout(() => {
+        this.scrollToBottom()
+        
         this.messages.push({
           content: 'Thank you for your message. I am processing your request...',
           isUser: false,
           timestamp: new Date()
         });
-        
+        this.scrollToBottom()
       
       }, 1000);
+      this.scrollToBottom()
 
       this.currentMessage = '';
-      
     }
+    
     
   }
   emptyChat(){

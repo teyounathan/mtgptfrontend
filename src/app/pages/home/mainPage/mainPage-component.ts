@@ -22,6 +22,9 @@ interface ChatMessage {
     .animate-float {
       animation: float 3s ease-in-out infinite;
     }
+    .messageContainer::-webkit-scrollbar{
+      display:none
+    }
     .scrollable::-webkit-scrollbar{
       display:none
     }
@@ -43,10 +46,13 @@ interface ChatMessage {
 })
 export class MainPageComponent {
   title = 'chatBot';
-
+  showModal=false
   private MessageId:number|null=null
   constructor(private apiService:ApiService){
     this.MessageId=Date.now()
+  }
+  showModalFunc(){
+    console.log("hey")
   }
 
   @ViewChild('Robot') private readonly Robot!: ElementRef;
@@ -78,7 +84,7 @@ export class MainPageComponent {
   }
 
   scrollToBottom(){
-    const div= document.getElementById("messageContainer") as HTMLElement
+    const div= this.messageContainer.nativeElement
     div.scrollTop=div.scrollHeight
   }
 
@@ -92,13 +98,25 @@ export class MainPageComponent {
       gsap.to(this.Robot.nativeElement, {boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 1)", width:"400px",height:"70vh",left:"-10px",backgroundColor:"#000",padding:"10px",borderRadius:"20px",duration:1 });
       gsap.to(this.RobotImage.nativeElement,{width:"300px",top:"80px",margin:"auto",duration:1,delay:1})
       gsap.to(this.RobotMessage.nativeElement,{opacity:1,display:"block",duration:1,delay:1.5})
-    });
+    },);
+
+    gsap.matchMedia().add("(max-width: 769px)", () => {
+      // Animations for devices with width >= 769px
+    
+      gsap.to(this.inputForm.nativeElement,{boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 0.8)",transform:"translateX(0%)",duration:1,})
+      gsap.to(this.Robot.nativeElement, {boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 1)", width:"400px",height:"70vh",left:"-10px",backgroundColor:"#000",padding:"10px",borderRadius:"20px",duration:1 });
+      gsap.to(this.RobotImage.nativeElement,{width:"300px",top:"80px",margin:"auto",duration:1,delay:1})
+      gsap.to(this.RobotMessage.nativeElement,{opacity:1,display:"block",duration:1,delay:1.5})
+    },);
+
+
+    
+ 
 
 
 
   }
   ResetPosition() {
-    console.log(this.messageContainer.nativeElement  )
     gsap.to(this.inputForm.nativeElement,{boxShadow:"0px 0px 0px 0px ",transform:"translateX(0)",duration:1,})
     gsap.to(this.RobotImage.nativeElement,{width:"500px",top:"0",margin:"auto",duration:1})
     gsap.to(this.RobotMessage.nativeElement,{opacity:0,display:"hidden",duration:1})
@@ -109,13 +127,10 @@ export class MainPageComponent {
   }
 
   sendMessage() {
-    console.log(this.MessageId)
-    this.scrollToBottom()
     if (this.currentMessage.trim()) {
       this.robotPosition = 'right';
     
   
-        this.scrollToBottom()
       
       // Add user message
       this.messages.push({
@@ -131,7 +146,7 @@ export class MainPageComponent {
 
       if(this.MessageId){
         this.messages.push({
-              content: 'Thank you for your message. I am processing your request...',
+              content: '',
               isUser: false,
               timestamp: new Date()
             });
@@ -152,7 +167,7 @@ export class MainPageComponent {
       //   this.scrollToBottom()
       
       // }, 1000);
-      this.scrollToBottom()
+      setTimeout(() => this.scrollToBottom(), 0); 
 
       this.currentMessage = '';
     }
@@ -173,6 +188,8 @@ export class MainPageComponent {
 
           lastmessage.content=res.response
           this.messages.push(lastmessage)
+      setTimeout(() => this.scrollToBottom(), 0); 
+
         
         }
       },
@@ -194,6 +211,8 @@ export class MainPageComponent {
     this.MessageId=Date.now()
     this.messages=[]
     this.ResetPosition()
+    this.isLoading=false
+
   }
 }
 

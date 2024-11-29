@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 
 export class ApiService {
     constructor(private http: HttpClient) {}
-    private baseUrl="https://d63f-129-0-76-172.ngrok-free.app"
+    private baseUrl=import.meta.env.NG_APP_END_POINT
 
     SendMessage(message:string,sessionId:number,endpoint:string):Observable<any> {
         const formData=new FormData()

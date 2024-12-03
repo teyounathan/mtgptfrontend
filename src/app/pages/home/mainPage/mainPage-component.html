@@ -1,0 +1,172 @@
+<div class="min-h-screen bg-yellow-400 p-4 font-mtn-brighter overflow-y-hidden">
+    <!-- Header -->
+        <div class="flex justify-between items-center  p-4 mb-4 gap-5 w-[75%] m-auto">
+        <!-- Left section: MTN logo and New chat button -->
+        <div class="flex justify-between space-x-4 bg-black rounded-lg flex-1 py-2 p-5 drop-shadow-xl">
+          <div class="flex items-center">
+            <img src="assets/MTN_2022_Logo_White_RGB.png" alt="MTN Logo" class="h-8">
+          </div>
+          <button class="hidden bg-white rounded-full px-4 py-2  items-center gap-2 lg:flex" (click)="emptyChat()">
+            <span class="text-black">+ New chat</span>
+          </button>
+
+          <div class="  bg-black text-white rounded-lg p-5  flex items-center gap-2 flex-3 py-2 lg:hidden">
+            <span>username</span>
+            <div class="bg-yellow-400 p-1 rounded-full " (mouseenter)="showModal=true" (mouseleave)="showModal=false">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+        </div>
+      
+
+          </div>
+        </div>
+
+        <!-- Right section: User profile -->
+        <div class=" hidden  justify-between space-x-4 bg-black text-white rounded-lg  flex-2 py-3 p-8 drop-shadow-xl lg:flex" >
+          <span>username</span>
+          <div class="bg-yellow-400 p-1 rounded-full relative" (mouseenter)="showModal=true" (mouseleave)="showModal=false">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" >
+              <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+
+
+            <div *ngIf="showModal==true" (mouseenter)="showModal=true" (mouseleave)="showModal=false" class="
+            absolute  mt-4 text-[16px] w-[10vw] p-5 rounded-lg text-wrap
+             bg-black text-white">
+              <p  ><a href="https://learn.microsoft.com/en-us/copilot/microsoft-365/enterprise-data-protection">Enterprise data protection</a> applies to this chat</p>
+            </div>
+          </div>
+        </div>
+
+
+         
+      </div>
+
+    <!-- Chat Interface -->
+    <div class="  lg:bg-[#F3F3F3] rounded-3xl p-8 flex h-[82vh] flex-col items-center justify-center w-full " >
+      <h1 class="text-[40px] font-bold text-center  w-[80%]" id="typed-text" *ngIf="messages.length === 0">
+        Welcome To Morpheus, How can I help you today?
+      </h1>
+      <div class="w-[100%] lg:w-[90%] m-auto flex justify-between flex-col items-center h-full  ">
+          
+          <!-- Robot Avatar -->
+          <div    class="relative h-4 mb-8 w-[100%] flex  flex-row-reverse  gap-[400px] "  >
+            <div class="
+           scrollable
+            overflow-y-scroll 
+            scroll-smooth
+            overflow-hidden
+            h-[64vh] 
+            w-full
+           lg:w-[65%]
+           flex
+           flex-row-reverse
+            "
+            #scrollable
+            >
+            <div 
+                #messageContainer
+                id="messageContainer"
+                class="
+                h-fit
+                max-h-full
+                flex-col space-y-4 mb-8
+                w-[100%]
+               overflow-y-auto 
+            scroll-smooth
+            overflow-x-hidden
+               mt-auto
+               messageContainer
+                "
+            >
+
+                <div 
+                *ngFor="let message of messages" 
+               class=" flex flex-wrap justify-items-end"
+                [ngClass]="message.isUser ? 'justify-end' : 'justify-start'"
+              >
+              <div 
+                  class="w-full lg:max-w-[60%]   rounded-xl p-4 text-wrap flex-wrap "
+                 *ngIf="isLoading && !message.isUser && !message.content" 	
+                >
+                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z"><animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></svg>
+                </div>
+                
+                <div 
+                  class="w-[50%] lg:max-w-[60%]   rounded-xl p-4 text-wrap flex-wrap"
+                  [ngClass]="message.isUser  ? 'bg-[#2C2F32] text-white' : 'bg-[#DBDADC] text-black'" *ngIf="message.content" [innerHtml]="message.content"
+                >
+               
+                </div>
+              </div>
+            </div>
+    
+             </div>
+             <div class="
+                    hidden
+                    image
+                    absolute
+                     w-full h-[500px]
+                     m-auto 
+                     lg:flex
+                     flex-row
+                    justify-center
+                    transition ease-in-out    
+             "
+             #Robot
+             >
+                <h1 class="text-[35px] p-5 font-bold text-white hidden opacity-0 " #RobotMessage>
+                    Morpheus , your AI chat bot assistant
+                </h1>
+                 <img 
+                 src="assets/robot-avatar2.png" 
+                 alt="Morpheus Robot" 
+                 class="  
+                    absolute
+                     w-full h-[300px]
+                     m-auto 
+                     object-contain scale-[5]
+                     animate-float 
+                     lg:h-[450px]
+                     "
+
+                     #RobotImage
+                    
+                 >
+
+             </div>
+  
+
+          </div>
+    
+            <!-- Chat Input -->
+            <div class="w-[100%]  mx-auto mt-8  self-end  relative ">
+              <div class=" w-full lg:w-[64%] m-auto bg-black rounded-xl p-4 flex items-center gap-4 self-end relative inputForm" #inputForm>
+                <input 
+                  type="text" 
+                  placeholder="Ask me anything" 
+                  class="flex-1 bg-transparent text-white outline-none items-end h-[100%]"
+                  [(ngModel)]="currentMessage"
+                  (keyup.enter)="sendMessage()"
+                  autofocus="on"
+                  [disabled]="isLoading"
+                >
+                <button class="text-white hover:text-gray-300 transition-colors" (click)="emptyChat()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                        <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z" clip-rule="evenodd" />
+                      </svg>
+                      
+                      
+                  </button>
+              
+                <button class="text-white hover:text-gray-300 transition-colors" (click)="sendMessage()">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </button>
+              </div>
+        </div>
+
+      </div>
+  </div>

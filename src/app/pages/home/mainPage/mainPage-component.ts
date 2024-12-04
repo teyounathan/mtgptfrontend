@@ -94,8 +94,8 @@ export class MainPageComponent {
     gsap.matchMedia().add("(min-width: 769px)", () => {
       // Animations for devices with width >= 769px
     
-      gsap.to(this.inputForm.nativeElement,{boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 0.8)",transform:"translateX(35%)",duration:1,})
-      gsap.to(this.Robot.nativeElement, {boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 1)", width:"400px",height:"70vh",left:"-10px",backgroundColor:"#000",padding:"10px",borderRadius:"20px",duration:1 });
+      gsap.to(this.inputForm.nativeElement,{boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 0.8)",transform:"translateX(25%)",duration:1,})
+      gsap.to(this.Robot.nativeElement, {boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 1)", width:"25vw",height:"70vh",left:"-10px",backgroundColor:"#000",padding:"10px",borderRadius:"20px",duration:1 });
       gsap.to(this.RobotImage.nativeElement,{width:"300px",top:"80px",margin:"auto",duration:1,delay:1})
       gsap.to(this.RobotMessage.nativeElement,{opacity:1,display:"block",duration:1,delay:1.5})
     },);
@@ -104,8 +104,8 @@ export class MainPageComponent {
       // Animations for devices with width >= 769px
     
       gsap.to(this.inputForm.nativeElement,{boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 0.8)",transform:"translateX(0%)",duration:1,})
-      gsap.to(this.Robot.nativeElement, {boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 1)", width:"400px",height:"70vh",left:"-10px",backgroundColor:"#000",padding:"10px",borderRadius:"20px",duration:1 });
-      gsap.to(this.RobotImage.nativeElement,{width:"300px",top:"80px",margin:"auto",duration:1,delay:1})
+      gsap.to(this.Robot.nativeElement, {boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 1)", width:"40vw",height:"70vh",left:"-10px",backgroundColor:"#000",padding:"10px",borderRadius:"20px",duration:1 });
+      gsap.to(this.RobotImage.nativeElement,{width:"100px",top:"10px",margin:"auto",duration:1,delay:1})
       gsap.to(this.RobotMessage.nativeElement,{opacity:1,display:"block",duration:1,delay:1.5})
     },);
 
@@ -151,7 +151,7 @@ export class MainPageComponent {
               timestamp: new Date()
             });
 
-        this.makeFethRequest(this.currentMessage,this.MessageId,"chat")
+        this.makeFethRequest(this.currentMessage,this.MessageId)
       }
 
 
@@ -174,9 +174,9 @@ export class MainPageComponent {
     
     
   }
-  makeFethRequest(message:string,messageId:number,endpoint:string){
+  makeFethRequest(message:string,messageId:number){
     this.isLoading=true
-    this.apiService.SendMessage(message,messageId,endpoint).pipe(
+    this.apiService.SendMessage(message,messageId).pipe(
       finalize(()=>{
         this.isLoading=false
       })

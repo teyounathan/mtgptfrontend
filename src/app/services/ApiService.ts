@@ -11,8 +11,10 @@ import { Observable } from 'rxjs';
 export class ApiService {
     constructor(private http: HttpClient) {}
     private baseUrl=import.meta.env.NG_APP_END_POINT
+    private chatRoute=import.meta.env.NG_APP_CHAT_ROUTE
+    
 
-    SendMessage(message:string,sessionId:number,endpoint:string):Observable<any> {
+    SendMessage(message:string,sessionId:number):Observable<any> {
         const formData=new FormData()
         const header=new HttpHeaders()
    
@@ -21,9 +23,10 @@ export class ApiService {
             "session":sessionId
         }
 
-       
+       console.log(this.baseUrl)
 
-        return this.http.post(`${this.baseUrl}/${endpoint}/`,body,{
+        return this.http.post(`${this.baseUrl}/${this.chatRoute}/`,{"message":message,
+            "session":sessionId},{
            headers:header
         })
 

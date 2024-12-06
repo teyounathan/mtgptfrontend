@@ -91,7 +91,7 @@ export class MainPageComponent {
  
   moveToRight() {
 
-    gsap.matchMedia().add("(min-width: 769px)", () => {
+    gsap.matchMedia().add("(min-width: 1200px)", () => {
       // Animations for devices with width >= 769px
     
       gsap.to(this.inputForm.nativeElement,{boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 0.8)",transform:"translateX(25%)",duration:1,})
@@ -100,7 +100,7 @@ export class MainPageComponent {
       gsap.to(this.RobotMessage.nativeElement,{opacity:1,display:"block",duration:1,delay:1.5})
     },);
 
-    gsap.matchMedia().add("(max-width: 769px)", () => {
+    gsap.matchMedia().add("(max-width: 1200px)", () => {
       // Animations for devices with width >= 769px
     
       gsap.to(this.inputForm.nativeElement,{boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 0.8)",transform:"translateX(0%)",duration:1,})

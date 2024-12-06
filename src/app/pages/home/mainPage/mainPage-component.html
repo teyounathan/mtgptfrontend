@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-yellow-400 p-4 font-mtn-brighter overflow-y-hidden">
+<div class="w-screen h-screen bg-yellow-400 p-4 font-mtn-brighter overflow-y-hidden">
     <!-- Header -->
         <div class="flex justify-between items-center  p-4 mb-4 gap-5 w-[90vw] lg:w-[75vw] m-auto">
         <!-- Left section: MTN logo and New chat button -->
@@ -148,7 +148,7 @@
                 <input 
                   type="text" 
                   placeholder="Ask me anything" 
-                  class="flex-1 bg-transparent text-white outline-none items-end h-[100%]"
+                  class="flex-1 bg-transparent text-white outline-none items-end h-[100%] w-[100px]"
                   [(ngModel)]="currentMessage"
                   (keyup.enter)="sendMessage()"
                   autofocus="on"

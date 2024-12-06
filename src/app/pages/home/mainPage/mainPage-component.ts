@@ -179,6 +179,8 @@ export class MainPageComponent {
     this.apiService.SendMessage(message,messageId).pipe(
       finalize(()=>{
         this.isLoading=false
+      setTimeout(() => this.scrollToBottom(), 0); 
+
       })
       
     ).subscribe({

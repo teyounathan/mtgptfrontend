@@ -45,7 +45,7 @@
       </div>
 
     <!-- Chat Interface -->
-    <div class="  lg:bg-[#F3F3F3] rounded-3xl p-8 flex h-[82vh] flex-col items-center justify-center w-full " >
+    <div class="  lg:bg-[#F3F3F3] rounded-3xl p-8 flex h-[80vh] lg:h-[82vh] flex-col items-center justify-center w-full " >
       <h1 class="text-[40px] font-bold text-center  w-[80vw]" id="typed-text" *ngIf="messages.length === 0">
         Welcome To Morpheus, How can I help you today?
       </h1>
@@ -72,12 +72,14 @@
                 class="
                 h-fit
                 max-h-full
-                flex-col space-y-4 mb-8
+                flex-col space-y-4 
+                mb-10
                 w-[100%]
                overflow-y-auto 
             scroll-smooth
             overflow-x-hidden
                mt-auto
+               mb-10
                messageContainer
                 "
             >
@@ -95,7 +97,7 @@
                 </div>
                 
                 <div 
-                  class="w-[50vw] lg:max-w-[30vw]   rounded-xl p-4 text-wrap flex-wrap"
+                  class="w-[50vw] max-w-[70vw] lg:max-w-[30vw]   rounded-xl p-4 text-wrap flex-wrap"
                   [ngClass]="message.isUser  ? 'bg-[#2C2F32] text-white' : 'bg-[#DBDADC] text-black'" *ngIf="message.content" [innerHtml]="message.content"
                 >
                

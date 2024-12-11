@@ -3,6 +3,8 @@ import { Component, ViewChild, ElementRef, AfterViewChecked } from '@angular/cor
 import gsap from 'gsap';
 import { ApiService } from '../../../services/ApiService';
 import { finalize } from 'rxjs';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
 
 interface ChatMessage {
   content: string;
@@ -48,7 +50,7 @@ export class MainPageComponent {
   title = 'chatBot';
   showModal=false
   private MessageId:number|null=null
-  constructor(private apiService:ApiService){
+  constructor(private apiService:ApiService,private sanitizer: DomSanitizer){
     this.MessageId=Date.now()
   }
   showModalFunc(){
@@ -79,6 +81,18 @@ export class MainPageComponent {
 
 
   }
+
+  formatContent(content: string): SafeHtml {
+    content = content.replace(/\n/g, '<br>');
+    content = content.replace(/(?:^|\n)([-*]) (.+)/g, '<li>$2</li>');
+  
+    if (content.includes('<li>')) {
+      content = content.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+    }
+  
+    return this.sanitizer.bypassSecurityTrustHtml(content);
+  }
+
   ngOnInit(){
     this.gsapTL=gsap.timeline()
   }

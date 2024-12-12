@@ -11,7 +11,6 @@
           </button>
 
           <div class="  bg-black text-white rounded-lg p-5  flex items-center gap-2 flex-3 py-2 lg:hidden">
-            <span>username</span>
             <a href="https://learn.microsoft.com/en-us/copilot/microsoft-365/enterprise-data-protection">
 
               <div class="bg-yellow-400 p-1 rounded-full ">
@@ -28,7 +27,6 @@
 
         <!-- Right section: User profile -->
         <div class=" hidden  justify-between space-x-4 bg-black text-white rounded-lg  flex-2 py-3 p-8 drop-shadow-xl lg:flex" >
-          <span>username</span>
           <a href="https://learn.microsoft.com/en-us/copilot/microsoft-365/enterprise-data-protection">
 
             <div class="bg-yellow-400 p-1 rounded-full ">
@@ -45,9 +43,9 @@
       </div>
 
     <!-- Chat Interface -->
-    <div class="  lg:bg-[#F3F3F3] rounded-3xl p-8 flex h-[82vh] flex-col items-center justify-center w-full " >
+    <div class="  lg:bg-[#F3F3F3] rounded-3xl p-8 flex h-[80vh] lg:h-[82vh] flex-col items-center justify-center w-full " >
       <h1 class="text-[40px] font-bold text-center  w-[80vw]" id="typed-text" *ngIf="messages.length === 0">
-        Welcome To Morpheus, How can I help you today?
+        Welcome To Ophelia, How can I help you today?
       </h1>
       <div class="w-[100vw] lg:w-[80vw] lg:m-auto flex justify-between flex-col items-center h-full   ">
           
@@ -72,7 +70,8 @@
                 class="
                 h-fit
                 max-h-full
-                flex-col space-y-4 mb-8
+                flex-col space-y-4 
+                mb-10
                 w-[100%]
                overflow-y-auto 
             scroll-smooth
@@ -95,10 +94,10 @@
                 </div>
                 
                 <div 
-                  class="w-[50vw] lg:max-w-[30vw]   rounded-xl p-4 text-wrap flex-wrap"
-                  [ngClass]="message.isUser  ? 'bg-[#2C2F32] text-white' : 'bg-[#DBDADC] text-black'" *ngIf="message.content" [innerHtml]="message.content"
+                  class="w-[50vw] max-w-[70vw] lg:max-w-[30vw]   rounded-xl p-4 text-wrap flex-wrap"
+                  [ngClass]="message.isUser  ? 'bg-[#2C2F32] text-white' : 'bg-[#DBDADC] text-black'" *ngIf="message.content" [innerHtml]="formatContent(message.content)" 
                 >
-               
+                  
                 </div>
               </div>
             </div>
@@ -108,7 +107,8 @@
                     hidden
                     image
                     absolute
-                     w-full h-[500px]
+                     w-full 
+                     h-[500px]
                      m-auto 
                      lg:flex
                      flex-row
@@ -118,7 +118,7 @@
              #Robot
              >
                 <h1 class="text-[1.5rem] p-5 font-bold text-white hidden opacity-0 " #RobotMessage>
-                    Morpheus , your AI chat bot assistant
+                    Ophelia , your AI chat bot assistant
                 </h1>
                  <img 
                  src="assets/robot-avatar2.png" 
@@ -129,7 +129,7 @@
                      h-[40vh]
                      object-contain scale-[5]
                      animate-float 
-                     lg:h-[60vh]
+                     md:h-[60vh]
                      aspect-[4/3]
                      "
 

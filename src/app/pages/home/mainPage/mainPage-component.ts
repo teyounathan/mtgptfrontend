@@ -3,6 +3,8 @@ import { Component, ViewChild, ElementRef, AfterViewChecked } from '@angular/cor
 import gsap from 'gsap';
 import { ApiService } from '../../../services/ApiService';
 import { finalize } from 'rxjs';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
 
 interface ChatMessage {
   content: string;
@@ -48,7 +50,7 @@ export class MainPageComponent {
   title = 'chatBot';
   showModal=false
   private MessageId:number|null=null
-  constructor(private apiService:ApiService){
+  constructor(private apiService:ApiService,private sanitizer: DomSanitizer){
     this.MessageId=Date.now()
   }
   showModalFunc(){
@@ -79,6 +81,18 @@ export class MainPageComponent {
 
 
   }
+
+  formatContent(content: string): SafeHtml {
+    content = content.replace(/\n/g, '<br>');
+    content = content.replace(/(?:^|\n)([-*]) (.+)/g, '<li>$2</li>');
+  
+    if (content.includes('<li>')) {
+      content = content.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+    }
+  
+    return this.sanitizer.bypassSecurityTrustHtml(content);
+  }
+
   ngOnInit(){
     this.gsapTL=gsap.timeline()
   }
@@ -91,7 +105,7 @@ export class MainPageComponent {
  
   moveToRight() {
 
-    gsap.matchMedia().add("(min-width: 1200px)", () => {
+    gsap.matchMedia().add("(min-width: 1024px)", () => {
       // Animations for devices with width >= 769px
     
       gsap.to(this.inputForm.nativeElement,{boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 0.8)",transform:"translateX(25%)",duration:1,})
@@ -100,7 +114,7 @@ export class MainPageComponent {
       gsap.to(this.RobotMessage.nativeElement,{opacity:1,display:"block",duration:1,delay:1.5})
     },);
 
-    gsap.matchMedia().add("(max-width: 1200px)", () => {
+    gsap.matchMedia().add("(max-width: 1024px)", () => {
       // Animations for devices with width >= 769px
     
       gsap.to(this.inputForm.nativeElement,{boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 0.8)",transform:"translateX(0%)",duration:1,})
@@ -179,6 +193,8 @@ export class MainPageComponent {
     this.apiService.SendMessage(message,messageId).pipe(
       finalize(()=>{
         this.isLoading=false
+      setTimeout(() => this.scrollToBottom(), 0); 
+
       })
       
     ).subscribe({

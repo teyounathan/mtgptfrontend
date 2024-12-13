@@ -3,8 +3,8 @@
         <div class="flex justify-between items-center  p-4 mb-4 gap-5 w-[90vw] lg:w-[75vw] m-auto">
         <!-- Left section: MTN logo and New chat button -->
         <div class="flex justify-between space-x-4 bg-black rounded-lg flex-1 py-2 p-5 drop-shadow-xl">
-          <div class="flex items-center">
-            <img src="assets/MTN_2022_Logo_White_RGB.png" alt="MTN Logo" class="object-fill bg-cove]">
+          <div class="flex items-center" >
+            <img src="assets/MTN_2022_Logo_White_RGB.png" alt="MTN Logo"  (click)="emptyChat()" class="object-fill bg-cove] cursor-pointer">
           </div>
           <button class="hidden bg-white rounded-full px-3 py-2 h-fit m-auto  items-center gap-2 lg:flex" (click)="emptyChat()">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -57,8 +57,8 @@
 
         <div class="topics w-[100vw] flex flex-row  flex-wrap flex-grow items-center justify-center   h-[40vh]  m-auto gap-5 lg:gap-20 p-10">
           <TopicComponent [title]="'Our products and services'" class="flex-grow lg:flex-grow-0"></TopicComponent>
-          <TopicComponent [title]="'Humman resource policies and procedures'" class="flex-grow lg:flex-grow-0"></TopicComponent>
-          <TopicComponent [title]="'Risk and compliance policies'" class="flex-grow lg:flex-grow-0"></TopicComponent>
+          <TopicComponent [title]="'Humman Resource policies and procedures'" class="flex-grow lg:flex-grow-0"></TopicComponent>
+          <TopicComponent [title]="'Risk and Compliance policies'" class="flex-grow lg:flex-grow-0"></TopicComponent>
 
 
         </div>
@@ -71,6 +71,7 @@
           <!-- Robot Avatar -->
           <div    class="relative h-4 mb-8 w-[90vw] flex  flex-row-reverse  lg:gap-[600px] "   >
             <div class="
+            
            scrollable
             overflow-y-scroll 
             scroll-smooth
@@ -80,13 +81,17 @@
            lg:w-[65%]
            flex
            flex-row-reverse
-            "
+    
+           "
+           *ngIf="messages.length !== 0"
             #scrollable
+            
             >
             <div 
                 #messageContainer
                 id="messageContainer"
                 class="
+              
                 h-fit
                 max-h-full
                 flex-col space-y-4 

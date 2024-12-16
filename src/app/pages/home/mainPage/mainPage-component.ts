@@ -30,6 +30,23 @@ interface ChatMessage {
     .scrollable::-webkit-scrollbar{
       display:none
     }
+
+   
+ 
+      textarea::-webkit-scrollbar {
+    width: 8px;        /* Width of scrollbar */
+  }
+
+  textarea::-webkit-scrollbar-track {
+    background: #000;  /* Background color of the scrollbar track */
+  }
+
+  textarea::-webkit-scrollbar-thumb {
+    background-color: #fff;  /* Color of the scrollbar handle */
+    border-radius: 4px;      /* Rounded corners */
+  }
+
+
   `],
 
   
@@ -58,6 +75,7 @@ export class MainPageComponent {
   messages: ChatMessage[] = [];
   gsapTL:any=null
   robotPosition: 'center' | 'right' = 'center';
+  rows=20
 
   ngAfterViewInit() {
     // Initialize box at center
@@ -213,6 +231,7 @@ export class MainPageComponent {
     
   }
   makeFethRequest(message:string,messageId:number){
+    this.rows=20
     this.isLoading=true
     this.apiService.SendMessage(message,messageId).pipe(
       finalize(()=>{
@@ -252,6 +271,21 @@ export class MainPageComponent {
     this.ResetPosition()
     this.isLoading=false
 
+  }
+  addRow(event: KeyboardEvent){
+    console.log(event.key)
+    if (event.shiftKey && event.key === 'Enter') {
+      event.preventDefault();
+     
+        this.rows += 20;  // Increment height by 20 pixels
+
+    
+    }
+    else if(event.key==="Backspace"){
+        if(this.rows>20){
+          this.rows-=20
+        }
+    }
   }
 }
 

@@ -42,7 +42,6 @@ export class MainPageComponent {
     this.MessageId=Date.now()
   }
   showModalFunc(){
-    console.log("hey")
   }
 
   @ViewChild('Robot') private readonly Robot!: ElementRef;
@@ -235,7 +234,6 @@ export class MainPageComponent {
         }
       },
       error:(err)=>{
-        console.log(err)
         let lastmessage=this.messages.pop()
         if(lastmessage){
 

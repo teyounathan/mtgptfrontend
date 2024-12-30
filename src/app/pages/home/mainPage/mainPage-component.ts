@@ -88,41 +88,58 @@ export class MainPageComponent {
 
 
   }
-
   formatContent(content: string): SafeHtml {
-    content = content.replace(/```([\s\S]*?)```/g, (match, code) => {
-      return `<code class="bg-yellow-400 font-semibold">${code}</code>`;
-    });
+    // Remove excessive <br> tags (more than one in sequence)
   
-    // Replace inline code blocks (``)
+    // Format tables
+    content = content.replace(
+      /<table>([\s\S]*?)<\/table>/g,
+      (match, tableBody) => `
+        <div class="overflow-x-scroll">
+          <table class="table-auto border-collapse border border-gray-300 w-full text-sm text-gray-700 bg-white shadow rounded-lg">
+        
+            <tbody>
+              ${tableBody.replace(
+                /<tr>([\s\S]*?)<\/tr>/g,
+                (match: any, row: string) =>
+                  `<tr class="border-b hover:bg-gray-50">${row.replace(
+                    /<td>([\s\S]*?)<\/td>/g,
+                    (_, cell) =>
+                      `<td class="px-4 py-2 text-sm text-gray-700">${cell}</td>`
+                  )}</tr>`
+              )}
+            </tbody>
+          </table>
+        </div>`
+    );
+  
+    // Format inline code blocks (`code`)
     content = content.replace(/`([^`]+)`/g, (match, code) => {
-      return `<code class="bg-yellow-400 font-semibold">${code}</code>`;
+      return `<code class="bg-yellow-100 px-1 py-0.5 rounded font-mono">${code}</code>`;
     });
   
-    // Replace headings (###)
+    // Replace headings (### Heading)
     content = content.replace(/^### (.+)$/gm, (match, heading) => {
-      return `<h3>${heading}</h3>`;
+      return `<h3 class="text-lg font-semibold text-gray-800 mt-4">${heading}</h3>`;
     });
   
     // Replace newline characters with <br>
-    content = content.replace(/\n/g, '<br>');
-  
-    // Replace bullet points (e.g., lines starting with `- ` or `* `)
+    
+    
+    // Format bullet points (- Item or * Item)
     content = content.replace(/(?:^|\n)([-*]) (.+)/g, (match, bullet, text) => {
-      return `<li>${text}</li>`;
+      return `<li class="list-disc list-inside">${text}</li>`;
     });
-
-    
   
-    // Wrap bullet points with <ul> if they exist
+    // Wrap bullet points in <ul> if they exist
     if (content.includes('<li>')) {
-      content = content.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+      content = content.replace(/(<li>.*<\/li>)/gs, '<ul class="mt-2 ml-4">$1</ul>');
     }
+    content = content.replace(/(<br>\s*){2,}/g, '<br>');
   
-    
     return this.sanitizer.bypassSecurityTrustHtml(content);
   }
-
+  
   ngOnInit(){
     this.gsapTL=gsap.timeline()
   }

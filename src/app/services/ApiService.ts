@@ -23,7 +23,6 @@ export class ApiService {
             "session":sessionId
         }
 
-       console.log(this.baseUrl)
 
         return this.http.post(`${this.baseUrl}/${this.chatRoute}/`,{"message":message,
             "session":sessionId},{

@@ -17,33 +17,38 @@ interface ChatMessage {
 
   templateUrl: './mainPage-component.html',
   styles: [`
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-    }
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-5px); 
+              
+        }
+      }
     .animate-float {
       animation: float 3s ease-in-out infinite;
     }
-    .messageContainer::-webkit-scrollbar{
-      display:none
-    }
+
     .scrollable::-webkit-scrollbar{
       display:none
     }
+
+   
+ 
+      textarea::-webkit-scrollbar {
+    width: 8px;        /* Width of scrollbar */
+  }
+
+  textarea::-webkit-scrollbar-track {
+    background: #000;  /* Background color of the scrollbar track */
+  }
+
+  textarea::-webkit-scrollbar-thumb {
+    background-color: #fff;  /* Color of the scrollbar handle */
+    border-radius: 4px;      /* Rounded corners */
+  }
+
+
   `],
-  animations: [
-    trigger('moveRobot', [
-      state('center', 
-        style({
-        transform: 'translateX(0)'
-      })),
-      state('right', 
-        style({
-        transform: 'translateX(-30%)',
-      })),
-      transition('center => right', [animate('1s ease-in-out')]),
-    ])
-  ]
+
   
 })
 export class MainPageComponent {
@@ -54,7 +59,6 @@ export class MainPageComponent {
     this.MessageId=Date.now()
   }
   showModalFunc(){
-    console.log("hey")
   }
 
   @ViewChild('Robot') private readonly Robot!: ElementRef;
@@ -64,11 +68,14 @@ export class MainPageComponent {
   @ViewChild('inputForm') private readonly inputForm! :ElementRef
   @ViewChild('RobotImage') private readonly RobotImage! :ElementRef
   @ViewChild("RobotMessage") private readonly RobotMessage!:ElementRef
+  @ViewChild("list") private readonly list!:ElementRef
+  @ViewChild("container")private readonly container!:ElementRef
   isLoading:boolean=false
   currentMessage: string = '';
   messages: ChatMessage[] = [];
   gsapTL:any=null
   robotPosition: 'center' | 'right' = 'center';
+  rows=20
 
   ngAfterViewInit() {
     // Initialize box at center
@@ -81,18 +88,58 @@ export class MainPageComponent {
 
 
   }
-
   formatContent(content: string): SafeHtml {
-    content = content.replace(/\n/g, '<br>');
-    content = content.replace(/(?:^|\n)([-*]) (.+)/g, '<li>$2</li>');
+    // Remove excessive <br> tags (more than one in sequence)
   
+    // Format tables
+    content = content.replace(
+      /<table>([\s\S]*?)<\/table>/g,
+      (match, tableBody) => `
+        <div class="overflow-x-scroll">
+          <table class="table-auto border-collapse border border-gray-300 w-full text-sm text-gray-700 bg-white shadow rounded-lg">
+        
+            <tbody>
+              ${tableBody.replace(
+                /<tr>([\s\S]*?)<\/tr>/g,
+                (match: any, row: string) =>
+                  `<tr class="border-b hover:bg-gray-50">${row.replace(
+                    /<td>([\s\S]*?)<\/td>/g,
+                    (_, cell) =>
+                      `<td class="px-4 py-2 text-sm text-gray-700">${cell}</td>`
+                  )}</tr>`
+              )}
+            </tbody>
+          </table>
+        </div>`
+    );
+  
+    // Format inline code blocks (`code`)
+    content = content.replace(/`([^`]+)`/g, (match, code) => {
+      return `<code class="bg-yellow-100 px-1 py-0.5 rounded font-mono">${code}</code>`;
+    });
+  
+    // Replace headings (### Heading)
+    content = content.replace(/^### (.+)$/gm, (match, heading) => {
+      return `<h3 class="text-lg font-semibold text-gray-800 mt-4">${heading}</h3>`;
+    });
+  
+    // Replace newline characters with <br>
+    
+    
+    // Format bullet points (- Item or * Item)
+    content = content.replace(/(?:^|\n)([-*]) (.+)/g, (match, bullet, text) => {
+      return `<li class="list-disc list-inside">${text}</li>`;
+    });
+  
+    // Wrap bullet points in <ul> if they exist
     if (content.includes('<li>')) {
-      content = content.replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>');
+      content = content.replace(/(<li>.*<\/li>)/gs, '<ul class="mt-2 ml-4">$1</ul>');
     }
+    content = content.replace(/(<br>\s*){2,}/g, '<br>');
   
     return this.sanitizer.bypassSecurityTrustHtml(content);
   }
-
+  
   ngOnInit(){
     this.gsapTL=gsap.timeline()
   }
@@ -108,10 +155,15 @@ export class MainPageComponent {
     gsap.matchMedia().add("(min-width: 1024px)", () => {
       // Animations for devices with width >= 769px
     
-      gsap.to(this.inputForm.nativeElement,{boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 0.8)",transform:"translateX(25%)",duration:1,})
+      gsap.to(this.inputForm.nativeElement,{boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 0.8)",translateX:"25%",duration:1,translateY:"55%"})
       gsap.to(this.Robot.nativeElement, {boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 1)", width:"25vw",height:"70vh",left:"-10px",backgroundColor:"#000",padding:"10px",borderRadius:"20px",duration:1 });
-      gsap.to(this.RobotImage.nativeElement,{width:"300px",top:"80px",margin:"auto",duration:1,delay:1})
-      gsap.to(this.RobotMessage.nativeElement,{opacity:1,display:"block",duration:1,delay:1.5})
+      gsap.to(this.RobotImage.nativeElement,{width:"300px",display:"block",duration:1})
+
+      gsap.to(this.RobotMessage.nativeElement,{opacity:1,display:"block",duration:1})
+      gsap.to(this.container.nativeElement,{opacity:1,display:"block",duration:1,padding:10})
+      gsap.to(this.list.nativeElement,{opacity:1,display:"flex",duration:1})
+
+
     },);
 
     gsap.matchMedia().add("(max-width: 1024px)", () => {
@@ -119,8 +171,12 @@ export class MainPageComponent {
     
       gsap.to(this.inputForm.nativeElement,{boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 0.8)",transform:"translateX(0%)",duration:1,})
       gsap.to(this.Robot.nativeElement, {boxShadow:"0 35px 60px -15px rgba(0, 0, 0, 1)", width:"40vw",height:"70vh",left:"-10px",backgroundColor:"#000",padding:"10px",borderRadius:"20px",duration:1 });
-      gsap.to(this.RobotImage.nativeElement,{width:"100px",top:"10px",margin:"auto",duration:1,delay:1})
-      gsap.to(this.RobotMessage.nativeElement,{opacity:1,display:"block",duration:1,delay:1.5})
+      gsap.to(this.RobotImage.nativeElement,{width:"100px",margin:"auto",duration:1})
+      gsap.to(this.RobotMessage.nativeElement,{opacity:1,display:"block",duration:1})
+      gsap.to(this.list.nativeElement,{opacity:1,display:"flex",duration:1})
+      gsap.to(this.container.nativeElement,{opacity:1,display:"block",duration:1})
+
+
     },);
 
 
@@ -132,8 +188,11 @@ export class MainPageComponent {
   }
   ResetPosition() {
     gsap.to(this.inputForm.nativeElement,{boxShadow:"0px 0px 0px 0px ",transform:"translateX(0)",duration:1,})
-    gsap.to(this.RobotImage.nativeElement,{width:"500px",top:"0",margin:"auto",duration:1})
+    gsap.to(this.RobotImage.nativeElement,{width:"100vw",display:"",margin:"auto",duration:1})
     gsap.to(this.RobotMessage.nativeElement,{opacity:0,display:"hidden",duration:1})
+    gsap.to(this.container.nativeElement,{opacity:0,display:"",duration:1})
+    
+    gsap.to(this.list.nativeElement,{opacity:0,display:"hidden",duration:1})
     
     gsap.to(this.Robot.nativeElement, { boxShadow:"0px 0px 0px 0px ", width:"100%",left:"0",backgroundColor:"transparent",padding:"0",borderRadius:"0",margin:"auto",duration:1 });
 
@@ -189,6 +248,7 @@ export class MainPageComponent {
     
   }
   makeFethRequest(message:string,messageId:number){
+    this.rows=20
     this.isLoading=true
     this.apiService.SendMessage(message,messageId).pipe(
       finalize(()=>{
@@ -210,7 +270,6 @@ export class MainPageComponent {
         }
       },
       error:(err)=>{
-        console.log(err)
         let lastmessage=this.messages.pop()
         if(lastmessage){
 
@@ -229,6 +288,21 @@ export class MainPageComponent {
     this.ResetPosition()
     this.isLoading=false
 
+  }
+  addRow(event: KeyboardEvent){
+    console.log(event.key)
+    if (event.shiftKey && event.key === 'Enter') {
+      event.preventDefault();
+     
+        this.rows += 20;  // Increment height by 20 pixels
+
+    
+    }
+    else if(event.key==="Backspace"){
+        if(this.rows>20){
+          this.rows-=20
+        }
+    }
   }
 }
 

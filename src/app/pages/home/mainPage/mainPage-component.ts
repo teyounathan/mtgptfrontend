@@ -89,57 +89,100 @@ export class MainPageComponent {
 
   }
   formatContent(content: string): SafeHtml {
-    // Remove excessive <br> tags (more than one in sequence)
-  
-    // Format tables
-    content = content.replace(
-      /<table>([\s\S]*?)<\/table>/g,
-      (match, tableBody) => `
-        <div class="overflow-x-scroll">
-          <table class="table-auto border-collapse border border-gray-300 w-full text-sm text-gray-700 bg-white shadow rounded-lg">
-        
-            <tbody>
-              ${tableBody.replace(
-                /<tr>([\s\S]*?)<\/tr>/g,
-                (match: any, row: string) =>
-                  `<tr class="border-b hover:bg-gray-50">${row.replace(
-                    /<td>([\s\S]*?)<\/td>/g,
-                    (_, cell) =>
-                      `<td class="px-4 py-2 text-sm text-gray-700">${cell}</td>`
-                  )}</tr>`
-              )}
-            </tbody>
-          </table>
-        </div>`
-    );
-  
-    // Format inline code blocks (`code`)
-    content = content.replace(/`([^`]+)`/g, (match, code) => {
-      return `<code class="bg-yellow-100 px-1 py-0.5 rounded font-mono">${code}</code>`;
-    });
-  
-    // Replace headings (### Heading)
-    content = content.replace(/^### (.+)$/gm, (match, heading) => {
-      return `<h3 class="text-lg font-semibold text-gray-800 mt-4">${heading}</h3>`;
-    });
-  
-    // Replace newline characters with <br>
+
+    content=this.removeTrailingSpaces(content)
     
+    const formatters = [
+      {
+        // Inline code
+        pattern: /`([^`]+)`/g,
+        replacement: '<code class="bg-yellow-100 px-1 py-0.5 rounded font-mono">$1</code>'
+      },
+      {
+        // Headings
+        pattern: /^### (.+)$/gm,
+        replacement: '<h3 class="text-lg font-semibold text-gray-800 mt-4">$1</h3>'
+      },
+      {
+        // Tables
+        pattern: /\|(?:.*?\|)+\n\|(?:-+\|)+\n((?:\|.*?\|.*?\n)+)/g,
+        handler: (match: string) => {
+          const [header, _, ...bodyRows] = match.trim().split('\n');
+          
+          const formatCells = (row: string, cellType: 'th' | 'td') => {
+            const cells = row.split('|')
+              .map(col => col.trim())
+              .filter(Boolean)
+              .map(col => `<${cellType} class="px-4 py-2 text-sm ${
+                cellType === 'th' ? 'font-semibold text-gray-800' : 'text-gray-700'
+              }">${col}</${cellType}>`);
+            return cellType === 'td' ? `<tr class="border-b hover:bg-gray-50">${cells.join('')}</tr>` : cells.join('');
+          };
+
+          const tableHeaders = formatCells(header, 'th');
+          const tableBody = bodyRows
+            .filter(row => row.trim())
+            .map(row => formatCells(row, 'td'))
+            .join('');
+
+          return `
+            <div class="overflow-scroll">
+              <table class="table-auto border-collapse border border-gray-300 w-full text-sm text-gray-700 bg-white shadow rounded-lg">
+                <thead><tr>${tableHeaders}</tr></thead>
+                <tbody>${tableBody}</tbody>
+              </table>
+            </div>`;
+        }
+      },
+      {
+        // Line breaks
+        pattern: /(<br>\s*){2,}/g,
+        replacement: '<br>'
+      },
+      {
+        // Newlines
+        pattern: /\n/g,
+        replacement: '<br>'
+      },
+      {
+        // Bullet points
+        pattern: /(?:^|\n)([-*]) (.+)/g,
+        replacement: '<li class="list-disc list-inside">$2</li>'
+      }
+    ];
+
+    let formattedContent = content;
     
-    // Format bullet points (- Item or * Item)
-    content = content.replace(/(?:^|\n)([-*]) (.+)/g, (match, bullet, text) => {
-      return `<li class="list-disc list-inside">${text}</li>`;
+    formatters.forEach(formatter => {
+      if (formatter.handler) {
+        formattedContent = formattedContent.replace(formatter.pattern, formatter.handler);
+      } else {
+        formattedContent = formattedContent.replace(formatter.pattern, formatter.replacement);
+      }
     });
-  
-    // Wrap bullet points in <ul> if they exist
-    if (content.includes('<li>')) {
-      content = content.replace(/(<li>.*<\/li>)/gs, '<ul class="mt-2 ml-4">$1</ul>');
+
+    // Wrap bullet points in <ul>
+    if (formattedContent.includes('<li>')) {
+      formattedContent = formattedContent.replace(
+        /(<li>.*<\/li>)/gs, 
+        '<ul class="mt-2 ml-4">$1</ul>'
+      );
     }
-    content = content.replace(/(<br>\s*){2,}/g, '<br>');
   
-    return this.sanitizer.bypassSecurityTrustHtml(content);
+    return this.sanitizer.bypassSecurityTrustHtml(this.removeTrailingSpaces(formattedContent));
+  } 
+  
+  
+  private removeTrailingSpaces(content: string): string {
+    return content
+      .split('\n')
+      .map(line => line.trimEnd())
+      .join('\n')
+      .replace(/\s+$/g, '');
   }
-  
+  // trimeOutput(content:string){
+    
+  // }
   ngOnInit(){
     this.gsapTL=gsap.timeline()
   }
@@ -289,20 +332,20 @@ export class MainPageComponent {
     this.isLoading=false
 
   }
-  addRow(event: KeyboardEvent){
-    console.log(event.key)
-    if (event.shiftKey && event.key === 'Enter') {
-      event.preventDefault();
-     
-        this.rows += 20;  // Increment height by 20 pixels
-
-    
+  addRow(event: KeyboardEvent | Event) {
+    if (event instanceof KeyboardEvent) {
+      if (event.shiftKey && event.key === 'Enter') {
+        event.preventDefault();
+        this.rows += 20;
+      } else if (event.key === "Backspace" && this.rows > 20) {
+        this.rows -= 20;
+      }
     }
-    else if(event.key==="Backspace"){
-        if(this.rows>20){
-          this.rows-=20
-        }
-    }
+  
+    // Get textarea element and adjust height based on content
+    const textarea = event.target as HTMLTextAreaElement;
+    const lines = textarea.value.split('\n').length;
+    this.rows = Math.max(lines * 20, 20); // 20px per line, minimum 20px
   }
 }
 

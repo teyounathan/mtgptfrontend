@@ -332,20 +332,20 @@ export class MainPageComponent {
     this.isLoading=false
 
   }
-  addRow(event: KeyboardEvent){
-    console.log(event.key)
-    if (event.shiftKey && event.key === 'Enter') {
-      event.preventDefault();
-     
-        this.rows += 20;  // Increment height by 20 pixels
-
-    
+  addRow(event: KeyboardEvent | Event) {
+    if (event instanceof KeyboardEvent) {
+      if (event.shiftKey && event.key === 'Enter') {
+        event.preventDefault();
+        this.rows += 20;
+      } else if (event.key === "Backspace" && this.rows > 20) {
+        this.rows -= 20;
+      }
     }
-    else if(event.key==="Backspace"){
-        if(this.rows>20){
-          this.rows-=20
-        }
-    }
+  
+    // Get textarea element and adjust height based on content
+    const textarea = event.target as HTMLTextAreaElement;
+    const lines = textarea.value.split('\n').length;
+    this.rows = Math.max(lines * 20, 20); // 20px per line, minimum 20px
   }
 }
 
